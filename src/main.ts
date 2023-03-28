@@ -1,24 +1,41 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter'
+import './css/style.scss'
+import CompleteList from './model/CompleteList'
+import ListItem from './model/ListItem'
+import ListTemplate from './templates/ListTemplate'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+const initApp = (): void => {
+  const completeList = CompleteList.instance
+  const template = ListTemplate.instance
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+  const itemEntryForm = document.getElementById("itemEntryForm") as HTMLFormElement
+
+  itemEntryForm.addEventListener("submit", (event: SubmitEvent): void => {
+    event.preventDefault()
+
+    //new item value
+    const input = document.getElementById("newItem") as HTMLInputElement
+    const newEntryText: string = input.value.trim()
+    if (!newEntryText.length) return
+
+    //calculate item ID
+    const itemId: number = completeList.list.length
+      ? parseInt(completeList.list[completeList.list.length - 1].id) + 1
+      : 1
+
+    const newItem = new ListItem(itemId.toString(), newEntryText)
+    completeList.addItem(newItem)
+    template.render(completeList)
+  })
+
+  const clearItems = document.getElementById("clearItemsButton") as HTMLButtonElement
+
+  clearItems.addEventListener('click', (): void => {
+    completeList.clearList()
+    template.clear()
+  })
+
+  completeList.load()
+  template.render(completeList)
+}
+
+document.addEventListener("DOMContentLoaded", initApp) 
