@@ -13,7 +13,7 @@ const initApp = (): void => {
     event.preventDefault()
 
     //new item value
-    const input = document.getElementById("newItem") as HTMLInputElement
+    let input = document.getElementById("newItem") as HTMLInputElement
     const newEntryText: string = input.value.trim()
     if (!newEntryText.length) return
 
@@ -24,6 +24,7 @@ const initApp = (): void => {
 
     const newItem = new ListItem(itemId.toString(), newEntryText)
     completeList.addItem(newItem)
+    input.value = ""
     template.render(completeList)
   })
 
